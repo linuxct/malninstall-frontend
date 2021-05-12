@@ -23,7 +23,7 @@ const Home = () => {
 };
 
 function Form() {
-  const [enabled, setEnabled] = useState(false);
+  const [enabled, setEnabled] = useState(true);
 
   const generatePackage = async event => {
     event.preventDefault()
