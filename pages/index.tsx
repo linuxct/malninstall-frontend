@@ -23,7 +23,7 @@ const Home = () => {
 };
 
 function Form() {
-  const [enabled, setEnabled] = useState(true);
+  const [disabled, setDisabled] = useState(true);
 
   const generatePackage = async event => {
     event.preventDefault()
@@ -45,7 +45,7 @@ function Form() {
 
   function onVerifyCaptcha(token){
     console.log("Verified: " + token);
-    setEnabled(true);
+    setDisabled(false);
   }
 
   return (
@@ -63,7 +63,7 @@ function Form() {
       <div className="md:flex md:items-center mb-6 pl-4">
         <HCaptcha sitekey="81554bf3-7391-4691-94fe-ed8ab8a1b80e" onVerify={onVerifyCaptcha} />
       </div>
-      {!enabled && 
+      {!disabled && 
         <div className="md:flex md:items-center">
           <div className="md:w-1/3"></div>
           <div className="md:w-2/3">
