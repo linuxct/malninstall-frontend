@@ -61,7 +61,7 @@ function Form() {
         </div>
       </div>
       <div className="md:flex md:items-center mb-6 pl-4">
-        <HCaptcha sitekey="81554bf3-7391-4691-94fe-ed8ab8a1b80e" onVerify={onVerifyCaptcha} />
+        <HCaptcha sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
       </div>
       {!disabled && 
         <div className="md:flex md:items-center">
