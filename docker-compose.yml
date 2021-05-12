@@ -1,0 +1,10 @@
+services:
+  malninstall-frontend:
+    image: malninstallfrontend:latest
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.malninstall-frontend.entryPoints=web-secure
+      - traefik.http.routers.malninstall-frontend.rule=Host(`malninstall.linuxct.space`)
+      - traefik.http.routers.malninstall-frontend.tls=true
+      - traefik.http.services.malninstall-frontend.loadbalancer.server.port=3000

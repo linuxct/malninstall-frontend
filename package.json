@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@hcaptcha/react-hcaptcha": "^0.3.6",
     "next": "^10.0.3",
     "react": "16.13.1",
     "react-dom": "16.13.1"

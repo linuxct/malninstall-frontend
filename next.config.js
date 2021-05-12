@@ -1,17 +1,16 @@
 module.exports = {
-  publicRuntimeConfig: {
-    siteMetaData: {
-      name: "Next.js + Tailwind CSS template",
-      url:
-        process.env.NODE_ENV === "development" ? "http://localhost:3000" : "/",
-      title: "Next.js + Tailwind CSS template",
-      description: "Next.js + Tailwind CSS template",
-      twitterHandle: "earvinpiamonte",
-      socialPreview: "/images/preview.png",
+    publicRuntimeConfig: {
+        siteMetaData: {
+            name: "Malninstall Package Generator",
+            url: process.env.NODE_ENV === "development" ? "http://localhost:3000" : "/",
+            title: "Malninstall Package Generator",
+            description: "Generate a package to remove malware from your Android device, right from your web browser",
+            twitterHandle: "linuxct",
+            socialPreview: "/images/preview.png",
+        },
     },
-  },
-  i18n: {
-    locales: ["en-US"],
-    defaultLocale: "en-US",
-  },
+    i18n: {
+        locales: ["en-GB"],
+        defaultLocale: "en-GB",
+    },
 };
