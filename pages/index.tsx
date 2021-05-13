@@ -62,7 +62,11 @@ function Form() {
         const responseUrl = `https://malninstall-configuration.linuxct.space${response.data.downloadUrl}`
         fetch(responseUrl)
           .then((res) => {
-            const filename = res.headers.get('Content-Disposition').split('filename=')[1];
+            let headers = res.headers.get('Content-Disposition');
+            if (headers == null){
+              headers = res.headers.get('content-disposition');
+            }
+            const filename = headers.split(';')[1].split('filename=')[1].replaceAll('"', '');
             res.blob().then(blob => {
               let url = window.URL.createObjectURL(blob);
               let a = document.createElement('a');
