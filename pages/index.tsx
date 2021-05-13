@@ -97,10 +97,10 @@ function Form() {
             return Promise.reject({ Error: 'Something went wrong', err });
           })
       })
-      .catch(function (error) {
+      .catch(function (err) {
         setIsError(true);
         setDialogTitle("Error!");
-        setDialogText(`An error has occurred while generating the package.<br/>Details: <br/>${error}`);
+        setDialogText(`An error has occurred while generating the package.<br/>Details: <br/>${err}`);
         setShowModal(true);
       });
 
@@ -190,9 +190,9 @@ function Form() {
                         }
                       </div>
                       <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">{dialogTitle}</Dialog.Title>
+                        <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900" dangerouslySetInnerHTML={{__html:dialogTitle}}></Dialog.Title>
                         <div className="mt-2">
-                          <p className="text-sm text-gray-500">{dialogText}</p>
+                          <p dangerouslySetInnerHTML={{__html:dialogText}} className="text-sm text-gray-500"></p>
                         </div>
                       </div>
                     </div>
