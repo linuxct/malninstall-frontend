@@ -80,7 +80,7 @@ function Form() {
             res.blob().then(blob => {
               setIsError(false)
               setDialogTitle("Success!")
-              setDialogText("Your package will be downloaded shortly")
+              setDialogText("Your package will be downloaded now.<br/>For further instructions, check the Help tab.")
               setShowModal(true)
               let url = window.URL.createObjectURL(blob);
               let a = document.createElement('a');
