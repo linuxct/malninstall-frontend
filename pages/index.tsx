@@ -49,31 +49,36 @@ function Form() {
     });
     if (data['packagename'] === '' ||
       data['hcaptcha'] === '') return;
-    const res = await fetch('/api/create', {
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'POST'
-    })
 
-    const result = await res.json();
-    const responseUrl = `https://malninstall-configuration.linuxct.space${result.url}`;
-    console.log(responseUrl)
-    fetch(responseUrl)
-      .then((res) => {
-        const filename = res.headers.get('Content-Disposition').split('filename=')[1];
-        res.blob().then(blob => {
-          let url = window.URL.createObjectURL(blob);
-          let a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          a.click();
-        });
+    const requestData = {
+      'entryChannel': 'Web',
+      'safetyNetJwt': '',
+      'hcaptchaClientResponse': data['hcaptcha'],
+      'packageName': data['packagename']
+    }
+
+    axios.post('https://malninstall-configuration.linuxct.space/PackageCreator/GeneratePackage', requestData)
+      .then(function (response) {
+        const responseUrl = `https://malninstall-configuration.linuxct.space${response.data.downloadUrl}`
+        fetch(responseUrl)
+          .then((res) => {
+            const filename = res.headers.get('Content-Disposition').split('filename=')[1];
+            res.blob().then(blob => {
+              let url = window.URL.createObjectURL(blob);
+              let a = document.createElement('a');
+              a.href = url;
+              a.download = filename;
+              a.click();
+            });
+          })
+          .catch((err) => {
+            return Promise.reject({ Error: 'Something went wrong', err });
+          })
       })
-      .catch((err) => {
-        return Promise.reject({ Error: 'Something Went Wrong', err });
-      })
+      .catch(function (error) {
+        console.error(error);
+      });
+
     hCaptchaComponent.current.resetCaptcha();
     setQuery({ packagename: "", hcaptcha: "" })
     setDisabled(true)
