@@ -28,7 +28,7 @@ function Form() {
     packagename: "",
     hcaptcha: ""
   });
-  const hCaptchaComponent = createRef;
+  const hCaptchaComponent = React.createRef();
   const handleParam = () => (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -55,7 +55,7 @@ function Form() {
     })
 
     const result = await res.json()
-    hCaptchaComponent.resetCaptcha();
+    hCaptchaComponent.current.resetCaptcha();
     setQuery({ packagename: "", hcaptcha: "" })
   }
 
@@ -79,7 +79,7 @@ function Form() {
         </div>
       </div>
       <div className="md:flex md:items-center mb-6 pl-4">
-        <HCaptcha ref={hCaptchaComponent} sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
+        <HCaptcha ref={this.hCaptchaComponent} sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
       </div>
       {!disabled &&
         <div className="md:flex md:items-center">
