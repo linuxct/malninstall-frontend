@@ -1,5 +1,5 @@
 import getConfig from "next/config";
-import { createRef, useState } from 'react';
+import { createRef, useState, RefObject } from 'react';
 import Head from "next/head";
 import React from "react";
 import Layout from "../components/layout";
@@ -28,7 +28,7 @@ function Form() {
     packagename: "",
     hcaptcha: ""
   });
-  const hCaptchaComponent = React.createRef();
+  const hCaptchaComponent = React.createRef<HCaptcha>();
   const handleParam = () => (e) => {
     const name = e.target.name;
     const value = e.target.value;
