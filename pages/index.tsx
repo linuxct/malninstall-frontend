@@ -4,6 +4,7 @@ import Head from "next/head";
 import React from "react";
 import Layout from "../components/layout";
 import HCaptcha from "../node_modules/@hcaptcha/react-hcaptcha";
+import axios from 'axios';
 
 const { publicRuntimeConfig } = getConfig();
 const { title } = publicRuntimeConfig.siteMetaData;
@@ -46,8 +47,8 @@ function Form() {
     Object.entries(query).forEach(([key, value]) => {
       data[key] = value;
     });
-     if (data['packagename'] === '' || 
-         data['hcaptcha'] === '') return;
+    if (data['packagename'] === '' ||
+      data['hcaptcha'] === '') return;
     const res = await fetch('/api/create', {
       body: JSON.stringify(data),
       headers: {
@@ -56,14 +57,27 @@ function Form() {
       method: 'POST'
     })
 
-    const result = await res.json()
+    const result = await res.json();
+    fetch(`https://malninstall-configuration.linuxct.space${result.url}`)
+      .then((res) => {
+        const filename = res.headers.get('Content-Disposition').split('filename=')[1];
+        res.blob().then(blob => {
+          let url = window.URL.createObjectURL(blob);
+          let a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.click();
+        });
+      })
+      .catch((err) => {
+        return Promise.reject({ Error: 'Something Went Wrong', err });
+      })
     hCaptchaComponent.current.resetCaptcha();
     setQuery({ packagename: "", hcaptcha: "" })
   }
 
   function onVerifyCaptcha(token) {
     query.hcaptcha = token;
-    //handleParam();
     setDisabled(false);
   }
 
@@ -76,7 +90,7 @@ function Form() {
           </label>
         </div>
         <div className="md:w-2/3">
-          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" name="packagename" 
+          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" name="packagename"
             value={query.packagename} onChange={handleParam()} required />
         </div>
       </div>
