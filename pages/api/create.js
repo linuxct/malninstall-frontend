@@ -9,8 +9,8 @@ export default function handler(req, res) {
     }
 
     axios.post('https://malninstall-configuration.linuxct.space/PackageCreator/GeneratePackage', requestData)
-        .then(function(serverResponse) {
-            res.status(200).json({ url: JSON.stringify(serverResponse) })
+        .then(function(response) {
+            res.status(200).json({ url: response.data.downloadUrl })
         })
         .catch(function(error) {
             console.error(error);

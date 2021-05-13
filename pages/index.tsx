@@ -43,6 +43,8 @@ function Form() {
     Object.entries(query).forEach(([key, value]) => {
       data[key] = value;
     });
+     if (data['packagename'] === '' || 
+         data['hcaptcha'] === '') return;
     const res = await fetch('/api/create', {
       body: JSON.stringify(data),
       headers: {
