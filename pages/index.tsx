@@ -74,6 +74,7 @@ function Form() {
       })
     hCaptchaComponent.current.resetCaptcha();
     setQuery({ packagename: "", hcaptcha: "" })
+    setDisabled(true)
   }
 
   function onVerifyCaptcha(token) {
