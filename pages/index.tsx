@@ -22,13 +22,15 @@ const Home = () => {
   );
 };
 
+const hCaptchaComponent = React.createRef<HCaptcha>();
+
 function Form() {
   const [disabled, setDisabled] = useState(true);
   const [query, setQuery] = useState({
     packagename: "",
     hcaptcha: ""
   });
-  const hCaptchaComponent = React.createRef<HCaptcha>();
+
   const handleParam = () => (e) => {
     const name = e.target.name;
     const value = e.target.value;
