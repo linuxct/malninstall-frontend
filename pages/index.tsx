@@ -141,7 +141,7 @@ function Form() {
               value={query.packagename} onChange={handleParam()} required />
           </div>
         </div>
-        <div className="md:flex md:items-center mb-6 pl-4">
+        <div className="md:flex md:items-center mb-6 pl-12">
           <HCaptcha ref={hCaptchaComponent} sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
         </div>
         {!disabled &&
