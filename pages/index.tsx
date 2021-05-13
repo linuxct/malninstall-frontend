@@ -1,5 +1,5 @@
 import getConfig from "next/config";
-import { useState } from 'react';
+import { createRef, useState } from 'react';
 import Head from "next/head";
 import React from "react";
 import Layout from "../components/layout";
@@ -28,6 +28,7 @@ function Form() {
     packagename: "",
     hcaptcha: ""
   });
+  const hCaptchaComponent = createRef;
   const handleParam = () => (e) => {
     const name = e.target.name;
     const value = e.target.value;
@@ -54,9 +55,8 @@ function Form() {
     })
 
     const result = await res.json()
-    setQuery({ packagename: "", hcaptcha: query.hcaptcha })
-    console.log(result);
-    // result.user => 'Ada Lovelace'
+    hCaptchaComponent.resetCaptcha();
+    setQuery({ packagename: "", hcaptcha: "" })
   }
 
   function onVerifyCaptcha(token) {
@@ -79,7 +79,7 @@ function Form() {
         </div>
       </div>
       <div className="md:flex md:items-center mb-6 pl-4">
-        <HCaptcha sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
+        <HCaptcha ref={hCaptchaComponent} sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
       </div>
       {!disabled &&
         <div className="md:flex md:items-center">
