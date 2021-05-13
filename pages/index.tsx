@@ -79,7 +79,7 @@ function Form() {
         </div>
       </div>
       <div className="md:flex md:items-center mb-6 pl-4">
-        <HCaptcha ref={this.hCaptchaComponent} sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
+        <HCaptcha ref={hCaptchaComponent} sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
       </div>
       {!disabled &&
         <div className="md:flex md:items-center">
