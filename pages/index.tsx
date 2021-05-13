@@ -4,20 +4,19 @@ import Head from "next/head"
 import React from "react"
 import Layout from "../components/layout"
 import { Dialog, Transition } from '@headlessui/react'
-import { ExclamationIcon, CheckCircleIcon } from '@heroicons/react/outline'
+import { ExclamationIcon, CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/outline'
 import HCaptcha from "@hcaptcha/react-hcaptcha"
 import axios from 'axios'
 
 const { publicRuntimeConfig } = getConfig();
 const { title } = publicRuntimeConfig.siteMetaData;
-const { apiBaseUrl } = publicRuntimeConfig;
+const { apiBaseUrl, faqText } = publicRuntimeConfig;
 
 const Home = () => {
   return (
     <Layout>
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <h1>{title}</h1>
           <Form></Form>
         </div>
       </section>
@@ -39,6 +38,7 @@ function Form() {
   const [dialogText, setDialogText] = useState("")
   const [dialogTitle, setDialogTitle] = useState("")
   const [isError, setIsError] = useState(true)
+  const [isInfo, setIsInfo] = useState(false)
 
   const handleParam = () => (e) => {
     const name = e.target.name;
@@ -79,6 +79,7 @@ function Form() {
           .then((res) => {
             res.blob().then(blob => {
               setIsError(false)
+              setIsInfo(false)
               setDialogTitle("Success!")
               setDialogText("Your package will be downloaded now.<br/>For further instructions, check the Help tab.")
               setShowModal(true)
@@ -90,18 +91,20 @@ function Form() {
             });
           })
           .catch((err) => {
-            setIsError(true);
-            setDialogTitle("Error!");
-            setDialogText(`An error has occurred while generating the package.<br/>Details: <br/>${err}`);
-            setShowModal(true);
+            setIsError(true)
+            setIsInfo(false)
+            setDialogTitle("Error!")
+            setDialogText(`An error has occurred while generating the package.<br/>Details: <br/>${err}`)
+            setShowModal(true)
             return Promise.reject({ Error: 'Something went wrong', err });
           })
       })
       .catch(function (err) {
-        setIsError(true);
-        setDialogTitle("Error!");
-        setDialogText(`An error has occurred while generating the package.<br/>Details: <br/>${err}`);
-        setShowModal(true);
+        setIsError(true)
+        setIsInfo(false)
+        setDialogTitle("Error!")
+        setDialogText(`An error has occurred while generating the package.<br/>Details: <br/>${err}`)
+        setShowModal(true)
       });
 
     hCaptchaComponent.current.resetCaptcha();
@@ -114,13 +117,23 @@ function Form() {
     setDisabled(false);
   }
 
+  function displayHelp() {
+    setIsError(false)
+    setIsInfo(true)
+    setDialogTitle("Frequently Asked Questions (FAQ)")
+    setDialogText(faqText)
+    setShowModal(true)
+  }
+
   return (
     <div>
+      <button onClick={() => displayHelp()} className="float-right shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button">Help</button>
+      <h1>{title}</h1>
       <form className="w-full max-w-lg" onSubmit={generatePackage}>
         <div className="md:flex md:items-center mb-6">
           <div className="md:w-1/3">
             <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
-              Full Package Name
+              Package Name
           </label>
           </div>
           <div className="md:w-2/3">
@@ -137,7 +150,7 @@ function Form() {
             <div className="md:w-2/3">
               <button className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="submit">
                 Generate
-            </button>
+              </button>
             </div>
           </div>
         }
@@ -168,7 +181,7 @@ function Form() {
               {/* This element is to trick the browser into centering the modal contents. */}
               <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
                 &#8203;
-          </span>
+              </span>
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -181,18 +194,24 @@ function Form() {
                 <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                   <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
-                      <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                        {
-                          isError ?
+                      {
+                        isError ?
+                          <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                             <ExclamationIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
+                          </div>
+                          : isInfo ?
+                            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                              <InformationCircleIcon className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                            </div>
                             :
-                            <CheckCircleIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
-                        }
-                      </div>
+                            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                              <CheckCircleIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
+                            </div>
+                      }
                       <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900" dangerouslySetInnerHTML={{__html:dialogTitle}}></Dialog.Title>
+                        <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900" dangerouslySetInnerHTML={{ __html: dialogTitle }}></Dialog.Title>
                         <div className="mt-2">
-                          <p dangerouslySetInnerHTML={{__html:dialogText}} className="text-sm text-gray-500"></p>
+                          <p dangerouslySetInnerHTML={{ __html: dialogText }} className="text-sm text-gray-500"></p>
                         </div>
                       </div>
                     </div>
@@ -204,7 +223,7 @@ function Form() {
                       onClick={() => setShowModal(false)}
                       ref={okButtonRef}
                     >
-                      OK
+                      {isInfo ? "Close" : "OK"}
                 </button>
                   </div>
                 </div>
