@@ -4,7 +4,7 @@ module.exports = {
             name: "Malninstall Package Generator",
             url: process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://malninstall.linuxct.space",
             title: "Malninstall Package Generator",
-            description: "Generate a package to remove rogue applications from your Android device, right from your web browser",
+            description: "Generate packages to remove rogue applications from your Android device, right from your web browser",
             twitterHandle: "linuxct",
             socialPreview: "/images/preview-malninstall.png",
         },
