@@ -63,6 +63,7 @@ function Form() {
         fetch(responseUrl)
           .then((res) => {
             let headers = res.headers.get('Content-Disposition');
+            console.log(res.headers);
             if (headers == null){
               headers = res.headers.get('content-disposition');
             }
