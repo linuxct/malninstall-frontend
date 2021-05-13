@@ -14,6 +14,6 @@ export default function handler(req, res) {
         })
         .catch(function(error) {
             console.log(error);
-            res.status(403).json({ err: error })
+            res.status(403).json({ err: error, axios: true })
         });
 }
