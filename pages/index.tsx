@@ -144,10 +144,10 @@ function Form() {
         <div className="md:flex md:items-center mb-6 md:pl-12">
           <HCaptcha ref={hCaptchaComponent} sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
         </div>
-        {
-          <div className="flex items-center">
-            <div className="w-1/3"></div>
-            <div className="w-2/3">
+        { !disabled &&
+          <div className="md:flex md:items-center">
+            <div className="md:w-1/3"></div>
+            <div className="md:w-2/3">
               <button className="shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="submit">
                 Generate
               </button>
