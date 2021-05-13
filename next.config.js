@@ -8,6 +8,7 @@ module.exports = {
             twitterHandle: "linuxct",
             socialPreview: "/images/preview.png",
         },
+        apiBaseUrl: "https://malninstall-configuration.linuxct.space"
     },
     i18n: {
         locales: ["en-GB"],

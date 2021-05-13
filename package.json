@@ -9,7 +9,11 @@
   },
   "dependencies": {
     "@hcaptcha/react-hcaptcha": "^0.3.6",
+    "@headlessui/react": "^1.2.0",
+    "@heroicons/react": "^1.0.1",
     "axios": "^0.21.1",
+    "headlessui": "^0.0.0",
+    "heroicons": "^1.0.1",
     "next": "^10.0.3",
     "react": "16.13.1",
     "react-dom": "16.13.1"
