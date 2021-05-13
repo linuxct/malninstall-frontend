@@ -31,7 +31,6 @@ function Form() {
   const handleParam = () => (e) => {
     const name = e.target.name;
     const value = e.target.value;
-    debugger;
     setQuery((prevState) => ({
       ...prevState,
       [name]: value
@@ -40,12 +39,12 @@ function Form() {
 
   const generatePackage = async event => {
     event.preventDefault()
-    const formData = new FormData()
+    const data = {}
     Object.entries(query).forEach(([key, value]) => {
-      formData.append(key, value)
+      data[key] = value;
     });
     const res = await fetch('/api/create', {
-      body: formData,
+      body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json'
       },
@@ -58,7 +57,7 @@ function Form() {
     // result.user => 'Ada Lovelace'
   }
 
-  function onVerifyCaptcha(token){
+  function onVerifyCaptcha(token) {
     query.hcaptcha = token;
     //handleParam();
     setDisabled(false);
@@ -73,14 +72,14 @@ function Form() {
           </label>
         </div>
         <div className="md:w-2/3">
-          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="full-package-name" type="text" name="full-package-name" value={query.packagename}
-            onChange={handleParam()} required placeholder="com.package.name" />
+          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" name="full-package-name" 
+            value={query.packagename} onChange={handleParam()} required />
         </div>
       </div>
       <div className="md:flex md:items-center mb-6 pl-4">
         <HCaptcha sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
       </div>
-      {!disabled && 
+      {!disabled &&
         <div className="md:flex md:items-center">
           <div className="md:w-1/3"></div>
           <div className="md:w-2/3">
@@ -90,7 +89,7 @@ function Form() {
           </div>
         </div>
       }
-      
+
     </form>
 
 
