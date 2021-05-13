@@ -66,7 +66,7 @@ function Form() {
             if (headers == null){
               headers = res.headers.get('content-disposition');
             }
-            const filename = headers.split(';')[1].split('filename=')[1].replaceAll('"', '');
+            const filename = res.headers['content-disposition'].split('filename=');
             res.blob().then(blob => {
               let url = window.URL.createObjectURL(blob);
               let a = document.createElement('a');
