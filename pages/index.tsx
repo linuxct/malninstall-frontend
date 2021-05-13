@@ -81,6 +81,7 @@ function Form() {
               setIsError(false)
               setDialogTitle("Success!")
               setDialogText("Your package will be downloaded shortly")
+              setShowModal(true)
               let url = window.URL.createObjectURL(blob);
               let a = document.createElement('a');
               a.href = url;
