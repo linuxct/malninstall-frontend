@@ -24,14 +24,28 @@ const Home = () => {
 
 function Form() {
   const [disabled, setDisabled] = useState(true);
+  const [query, setQuery] = useState({
+    packagename: "",
+    hcaptcha: ""
+  });
+  const handleParam = () => (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+    debugger;
+    setQuery((prevState) => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
 
   const generatePackage = async event => {
     event.preventDefault()
-
+    const formData = new FormData()
+    Object.entries(query).forEach(([key, value]) => {
+      formData.append(key, value)
+    });
     const res = await fetch('/api/create', {
-      body: JSON.stringify({
-        name: event.target.name.value
-      }),
+      body: formData,
       headers: {
         'Content-Type': 'application/json'
       },
@@ -39,12 +53,14 @@ function Form() {
     })
 
     const result = await res.json()
+    setQuery({ packagename: "", hcaptcha: query.hcaptcha })
     console.log(result);
     // result.user => 'Ada Lovelace'
   }
 
   function onVerifyCaptcha(token){
-    console.log("Verified: " + token);
+    query.hcaptcha = token;
+    //handleParam();
     setDisabled(false);
   }
 
@@ -57,7 +73,8 @@ function Form() {
           </label>
         </div>
         <div className="md:w-2/3">
-          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="inline-full-name" type="text" required placeholder="com.package.name" />
+          <input className="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500" id="full-package-name" type="text" name="full-package-name" value={query.packagename}
+            onChange={handleParam()} required placeholder="com.package.name" />
         </div>
       </div>
       <div className="md:flex md:items-center mb-6 pl-4">
