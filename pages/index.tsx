@@ -58,7 +58,9 @@ function Form() {
     })
 
     const result = await res.json();
-    fetch(`https://malninstall-configuration.linuxct.space${result.url}`)
+    const responseUrl = `https://malninstall-configuration.linuxct.space${result.url}`;
+    console.log(responseUrl)
+    fetch(responseUrl)
       .then((res) => {
         const filename = res.headers.get('Content-Disposition').split('filename=')[1];
         res.blob().then(blob => {
