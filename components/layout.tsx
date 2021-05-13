@@ -5,9 +5,6 @@ import { useRouter } from "next/router";
 const { publicRuntimeConfig } = getConfig();
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const router = useRouter();
-  const { asPath } = router;
-
   const {
     url,
     twitterHandle,
@@ -21,7 +18,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <>
       <Head>
         <link rel="icon" href="/favicon.ico" key="favicon" />
-        <link rel="canonical" href={`${url}${asPath}`} key="canonical" />
+        <link rel="canonical" href={`${url}`} key="canonical" />
 
         {/* Twitter */}
         <meta
@@ -47,7 +44,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         />
 
         {/* Open Graph */}
-        <meta property="og:url" content={`${url}${asPath}`} key="og_url" />
+        <meta property="og:url" content={`${url}`} key="og_url" />
         <meta property="og:site_name" content={name} key="og_site_name" />
         <meta property="og:title" content={title} key="og_title" />
         <meta
