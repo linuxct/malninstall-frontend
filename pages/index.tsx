@@ -60,19 +60,14 @@ function Form() {
     axios.post('https://malninstall-configuration.linuxct.space/PackageCreator/GeneratePackage', requestData)
       .then(function (response) {
         const responseUrl = `https://malninstall-configuration.linuxct.space${response.data.downloadUrl}`
+        const fileName = response.data.fileName ?? "Removal Tool.apk";
         fetch(responseUrl)
           .then((res) => {
-            let headers = res.headers.get('Content-Disposition');
-            console.log(res.headers);
-            if (headers == null){
-              headers = res.headers.get('content-disposition');
-            }
-            const filename = res.headers['content-disposition'].split('filename=');
             res.blob().then(blob => {
               let url = window.URL.createObjectURL(blob);
               let a = document.createElement('a');
               a.href = url;
-              a.download = filename;
+              a.download = fileName;
               a.click();
             });
           })
