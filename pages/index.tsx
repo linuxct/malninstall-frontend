@@ -25,7 +25,7 @@ const Home = () => {
 };
 
 const hCaptchaComponent = createRef<HCaptcha>();
-const enum ModalState {
+enum ModalState {
   Informative,
   Error,
   Success
