@@ -25,6 +25,11 @@ const Home = () => {
 };
 
 const hCaptchaComponent = createRef<HCaptcha>();
+const enum ModalState {
+  Informative,
+  Error,
+  Success
+}
 
 function Form() {
   const [disabled, setDisabled] = useState(true);
@@ -37,8 +42,7 @@ function Form() {
   const okButtonRef = useRef()
   const [dialogText, setDialogText] = useState("")
   const [dialogTitle, setDialogTitle] = useState("")
-  const [isError, setIsError] = useState(true)
-  const [isInfo, setIsInfo] = useState(false)
+  const [modalState, setModalState] = useState<ModalState>()
 
   const handleParam = () => (e) => {
     const name = e.target.name;
@@ -57,7 +61,7 @@ function Form() {
     });
     if (data['packagename'] === '' ||
       data['hcaptcha'] === '') {
-      setIsError(true)
+      setModalState(ModalState.Error)
       setDialogTitle("Error!")
       setDialogText("Please fill out all the fields in the form and complete the captcha.")
       setShowModal(true)
@@ -78,8 +82,7 @@ function Form() {
         fetch(responseUrl)
           .then((res) => {
             res.blob().then(blob => {
-              setIsError(false)
-              setIsInfo(false)
+              setModalState(ModalState.Success)
               setDialogTitle("Success!")
               setDialogText("Your package will be downloaded now.<br/>For further instructions, check the Help tab.")
               setShowModal(true)
@@ -91,8 +94,7 @@ function Form() {
             });
           })
           .catch((err) => {
-            setIsError(true)
-            setIsInfo(false)
+            setModalState(ModalState.Error)
             setDialogTitle("Error!")
             setDialogText(`An error has occurred while generating the package.<br/>Details: <br/>${err}`)
             setShowModal(true)
@@ -100,8 +102,7 @@ function Form() {
           })
       })
       .catch(function (err) {
-        setIsError(true)
-        setIsInfo(false)
+        setModalState(ModalState.Error)
         setDialogTitle("Error!")
         setDialogText(`An error has occurred while generating the package.<br/>Details: <br/>${err}`)
         setShowModal(true)
@@ -118,8 +119,7 @@ function Form() {
   }
 
   function displayHelp() {
-    setIsError(false)
-    setIsInfo(true)
+    setModalState(ModalState.Informative)
     setDialogTitle("Frequently Asked Questions (FAQ)")
     setDialogText(faqText)
     setShowModal(true)
@@ -144,7 +144,7 @@ function Form() {
         <div className="md:flex md:items-center mb-6 md:pl-12">
           <HCaptcha ref={hCaptchaComponent} sitekey="072b0fbf-f179-47fa-abcc-cae49c0850dd" onVerify={onVerifyCaptcha} />
         </div>
-        { !disabled &&
+        {!disabled &&
           <div className="md:flex md:items-center">
             <div className="md:w-1/3"></div>
             <div className="md:w-2/3">
@@ -155,7 +155,7 @@ function Form() {
           </div>
         }
       </form>
-      { enableMobileClientUpsell && 
+      { enableMobileClientUpsell &&
         <section className="float-right">
           <a href="https://play.google.com/store/apps/details?id=space.linuxct.malninstall">
             <img className="mock-device max-w-sm" src="/images/mock.png"></img>
@@ -201,11 +201,11 @@ function Form() {
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start">
                     {
-                      isError ?
+                      modalState == ModalState.Error ?
                         <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                           <ExclamationIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
                         </div>
-                        : isInfo ?
+                        : modalState == ModalState.Informative ?
                           <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
                             <InformationCircleIcon className="h-6 w-6 text-blue-600" aria-hidden="true" />
                           </div>
@@ -229,7 +229,7 @@ function Form() {
                     onClick={() => setShowModal(false)}
                     ref={okButtonRef}
                   >
-                    {isInfo ? "Close" : "OK"}
+                    {modalState == ModalState.Informative ? "Close" : "OK"}
                   </button>
                 </div>
               </div>
