@@ -4,7 +4,7 @@ import Head from "next/head"
 import React from "react"
 import Layout from "../components/layout"
 import { Dialog, Transition } from '@headlessui/react'
-import { ExclamationIcon, CheckCircleIcon, InformationCircleIcon } from '@heroicons/react/outline'
+import { ExclamationIcon, CheckCircleIcon, InformationCircleIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline'
 import HCaptcha from "@hcaptcha/react-hcaptcha"
 import axios from 'axios'
 
@@ -24,11 +24,17 @@ const Home = () => {
   );
 };
 
+const capitalLettersRegex = /[A-Z]/;
 const hCaptchaComponent = createRef<HCaptcha>();
 enum ModalState {
   Informative,
   Error,
+  Question,
   Success
+}
+enum ModalQuestionType {
+  Extension,
+  CapitalLetter
 }
 
 function Form() {
@@ -39,10 +45,15 @@ function Form() {
   });
 
   const [showModal, setShowModal] = useState(false)
+  const formRef = useRef<HTMLFormElement>()
   const okButtonRef = useRef()
+  const cancelButtonRef = useRef()
   const [dialogText, setDialogText] = useState("")
   const [dialogTitle, setDialogTitle] = useState("")
   const [modalState, setModalState] = useState<ModalState>()
+  const [modalQuestionType, setModalQuestionType] = useState<ModalQuestionType>()
+  const [acceptedExtension, setAcceptedExtension] = useState(false)
+  const [acceptedCapitalLetter, setAcceptedCapitalLetter] = useState(false)
 
   const handleParam = () => (e) => {
     const name = e.target.name;
@@ -54,7 +65,7 @@ function Form() {
   };
 
   const generatePackage = async event => {
-    event.preventDefault()
+    if (event !== null) event.preventDefault()
     const data = {}
     Object.entries(query).forEach(([key, value]) => {
       data[key] = value;
@@ -67,6 +78,38 @@ function Form() {
       setShowModal(true)
       return;
     };
+
+    if (data['packagename'].includes('.apk') && !acceptedExtension) {
+      setModalState(ModalState.Question)
+      setModalQuestionType(ModalQuestionType.Extension)
+      setDialogTitle("Are you sure?")
+      setDialogText(`
+      The package name you supplied contains an '.apk' extension in it.<br/><br/>
+      Please remember that you must not submit the downloaded APK name, 
+      but its package name. Check the Help tab for details on how to check it.<br/><br/>
+      Proceed anyways?
+      `)
+      setShowModal(true)
+      return;
+    }
+
+    if (capitalLettersRegex.test(data['packagename'][0]) && !acceptedCapitalLetter) {
+      setModalState(ModalState.Question)
+      setModalQuestionType(ModalQuestionType.CapitalLetter)
+      setDialogTitle("Are you sure?")
+      setDialogText(`
+      The package name you supplied starts with a capital letter.<br/><br/>
+      In mobile devices, the keyboard usually starts typing in capital letters
+      automatically, hence why you should double check whether the package name
+      should contain this.<br/><br/>
+      Proceed anyways?
+      `)
+      setShowModal(true)
+      return;
+    }
+
+    setAcceptedExtension(false)
+    setAcceptedCapitalLetter(false)
 
     const requestData = {
       'entryChannel': 'Web',
@@ -125,11 +168,27 @@ function Form() {
     setShowModal(true)
   }
 
+  function resolveContinueModal() {
+    setShowModal(false)
+    switch (modalQuestionType) {
+      case ModalQuestionType.Extension:
+        setAcceptedExtension(true)
+        break;
+      case ModalQuestionType.CapitalLetter:
+        setAcceptedCapitalLetter(true)
+        break;
+    }
+    setTimeout(() =>
+      formRef.current.dispatchEvent(
+        new Event("submit", { cancelable: true, bubbles: true })
+      ), 1000)
+  }
+
   return (
     <div>
       <button onClick={() => displayHelp()} className="float-right shadow bg-blue-500 hover:bg-blue-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded" type="button">Help</button>
       <h1>{title}</h1>
-      <form className="w-full max-w-lg" onSubmit={generatePackage}>
+      <form ref={formRef} className="w-full max-w-lg" onSubmit={generatePackage}>
         <div className="md:flex md:items-center mb-6">
           <div className="md:w-1/3">
             <label className="block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4" htmlFor="inline-full-name">
@@ -201,18 +260,22 @@ function Form() {
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="sm:flex sm:items-start">
                     {
-                      modalState == ModalState.Error ?
-                        <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                          <ExclamationIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
+                      modalState == ModalState.Question ?
+                        <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 sm:mx-0 sm:h-10 sm:w-10">
+                          <QuestionMarkCircleIcon className="h-6 w-6 text-yellow-600" aria-hidden="true" />
                         </div>
-                        : modalState == ModalState.Informative ?
-                          <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <InformationCircleIcon className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                        : modalState == ModalState.Error ?
+                          <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <ExclamationIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
                           </div>
-                          :
-                          <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <CheckCircleIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
-                          </div>
+                          : modalState == ModalState.Informative ?
+                            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                              <InformationCircleIcon className="h-6 w-6 text-blue-600" aria-hidden="true" />
+                            </div>
+                            :
+                            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                              <CheckCircleIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
+                            </div>
                     }
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                       <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900" dangerouslySetInnerHTML={{ __html: dialogTitle }}></Dialog.Title>
@@ -223,14 +286,36 @@ function Form() {
                   </div>
                 </div>
                 <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                  <button
-                    type="button"
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    onClick={() => setShowModal(false)}
-                    ref={okButtonRef}
-                  >
-                    {modalState == ModalState.Informative ? "Close" : "OK"}
-                  </button>
+                  {
+                    modalState == ModalState.Question ?
+                      <div>
+                        <button
+                          type="button"
+                          className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                          onClick={() => setShowModal(false)}
+                          ref={cancelButtonRef}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
+                          onClick={async () => resolveContinueModal()}
+                          ref={okButtonRef}
+                        >
+                          Continue
+                        </button>
+                      </div>
+                      :
+                      <button
+                        type="button"
+                        className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        onClick={() => setShowModal(false)}
+                        ref={okButtonRef}
+                      >
+                        {modalState == ModalState.Informative ? "Close" : "OK"}
+                      </button>
+                  }
                 </div>
               </div>
             </Transition.Child>
