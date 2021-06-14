@@ -111,7 +111,7 @@ function Form() {
       return;
     }
 
-    if (packageNameRegex.test(data['packagename'][0]) && !acceptedPackageName) {
+    if (!packageNameRegex.test(data['packagename']) && !acceptedPackageName) {
       setModalState(ModalState.Question)
       setModalQuestionType(ModalQuestionType.PackageName)
       setDialogTitle("Are you sure?")
