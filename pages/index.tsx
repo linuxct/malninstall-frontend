@@ -25,6 +25,7 @@ const Home = () => {
 };
 
 const capitalLettersRegex = /[A-Z]/;
+const packageNameRegex = /\w+\.\w+\.\w+/;
 const hCaptchaComponent = createRef<HCaptcha>();
 enum ModalState {
   Informative,
@@ -34,7 +35,8 @@ enum ModalState {
 }
 enum ModalQuestionType {
   Extension,
-  CapitalLetter
+  CapitalLetter,
+  PackageName
 }
 
 function Form() {
@@ -54,6 +56,7 @@ function Form() {
   const [modalQuestionType, setModalQuestionType] = useState<ModalQuestionType>()
   const [acceptedExtension, setAcceptedExtension] = useState(false)
   const [acceptedCapitalLetter, setAcceptedCapitalLetter] = useState(false)
+  const [acceptedPackageName, setAcceptedPackageName] = useState(false)
 
   const handleParam = () => (e) => {
     const name = e.target.name;
@@ -79,7 +82,7 @@ function Form() {
       return;
     };
 
-    if (data['packagename'].includes('.apk') && !acceptedExtension) {
+    if (data['packagename'].toLowerCase().includes('.apk') && !acceptedExtension) {
       setModalState(ModalState.Question)
       setModalQuestionType(ModalQuestionType.Extension)
       setDialogTitle("Are you sure?")
@@ -108,8 +111,23 @@ function Form() {
       return;
     }
 
+    if (packageNameRegex.test(data['packagename'][0]) && !acceptedPackageName) {
+      setModalState(ModalState.Question)
+      setModalQuestionType(ModalQuestionType.PackageName)
+      setDialogTitle("Are you sure?")
+      setDialogText(`
+      The package name you supplied appears to be invalid.<br/><br/>
+      Please check that you entered the correct package name for the application you want to overwrite. 
+      If you are sure it is correct, you can continue.<br/><br/>
+      Proceed anyways?
+      `)
+      setShowModal(true)
+      return;
+    }
+
     setAcceptedExtension(false)
     setAcceptedCapitalLetter(false)
+    setAcceptedPackageName(false)
 
     const requestData = {
       'entryChannel': 'Web',
@@ -176,6 +194,9 @@ function Form() {
         break;
       case ModalQuestionType.CapitalLetter:
         setAcceptedCapitalLetter(true)
+        break;
+      case ModalQuestionType.PackageName:
+        setAcceptedPackageName(true)
         break;
     }
     setTimeout(() =>
